@@ -6,9 +6,12 @@ import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class SimpleServer extends AbstractServer {
+
+	static int counter = 0;
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
 
 	public SimpleServer(int port) {
@@ -20,6 +23,7 @@ public class SimpleServer extends AbstractServer {
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
 		String request = message.getMessage();
+		counter=0;
 		try {
 			//we got an empty message, so we will send back an error message with the error details.
 			if (request.isBlank()){
@@ -48,25 +52,69 @@ public class SimpleServer extends AbstractServer {
 				client.sendToClient(message);
 			}
 			else if(request.startsWith("send Submitters IDs")){
-				//add code here to send submitters IDs to client
+				if(counter==0)
+				{
+					//nothing
+					counter++;
+				}
+				else
+				{
+					message.setMessage("314893520, 314893538");
+					client.sendToClient(message);
+				}
 			}
+//			else if(request.startsWith("send Submitters IDs")){
+//				//add code here to send submitters IDs to client
+//				message.setMessage("314893520, 314893538");
+//				client.sendToClient(message);
+//			}
 			else if (request.startsWith("send Submitters")){
 				//add code here to send submitters names to client
+				message.setMessage("Razan, Nawras");
+				client.sendToClient(message);
 			}
 			else if (request.equals("what’s the time?")) {
 				//add code here to send the time to client
+				LocalDateTime t = message.getTimeStamp();
+				String st=String.valueOf(t);
+				message.setMessage(st);
+				client.sendToClient(message);
 			}
 			else if (request.startsWith("multiply")){
 				//add code here to multiply 2 numbers received in the message and send result back to client
 				//(use substring method as shown above)
 				//message format: "multiply n*m"
+				char[] arr = request.toCharArray();// or char[] arr = message.getMessage().toCharArray();
+				String str = request;
+				int index=0,index2=0;
+				for(int i=0;i<=(arr.length-1);i++)
+				{
+					if(arr[i]=='*')
+					{
+						index=i;
+					}
+					if(arr[i]==' ')
+					{
+						index2=i;
+					}
+				}
+				String m_=str.substring(index+1);
+				int m=Integer.parseInt(m_);
+				String n_=str.substring(index2+1,index);
+				int n=Integer.parseInt(n_);
+
+				message.setMessage(Integer.toString(n*m));
+				client.sendToClient(message);
+
 			}else{
+				sendToAllClients(message);
 				//add code here to send received message to all clients.
 				//The string we received in the message is the message we will send back to all clients subscribed.
 				//Example:
 					// message received: "Good morning"
 					// message sent: "Good morning"
 				//see code for changing submitters IDs for help
+
 			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
