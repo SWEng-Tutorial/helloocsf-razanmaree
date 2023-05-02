@@ -16,14 +16,14 @@ public class SimpleServer extends AbstractServer {
 
 	public SimpleServer(int port) {
 		super(port);
-		
+
 	}
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
 		String request = message.getMessage();
-		counter=0;
+//		counter=0;
 		try {
 			//we got an empty message, so we will send back an error message with the error details.
 			if (request.isBlank()){
@@ -41,6 +41,7 @@ public class SimpleServer extends AbstractServer {
 			}
 			//we got a request to add a new client as a subscriber.
 			else if (request.equals("add client")){
+				counter=0;
 				SubscribedClient connection = new SubscribedClient(client);
 				SubscribersList.add(connection);
 				message.setMessage("client added successfully");
@@ -132,3 +133,4 @@ public class SimpleServer extends AbstractServer {
 	}
 
 }
+//########################################################
